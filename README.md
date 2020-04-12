@@ -6,15 +6,15 @@ Hight contrast and low vibrance version of Arc theme
 
 ##### Arcana
 
-![A screenshot of the Arcana theme](http://i.imgur.com/Ph5ObOa.png)
+![A screenshot of the Arcana theme](https://user-images.githubusercontent.com/1345297/79069200-b3cdc100-7ccc-11ea-96c4-fdb08d046e6e.png)
 
 ##### Arcana-Darker
 
-![A screenshot of the Arcana-Darker theme](http://i.imgur.com/NC6dqyl.png)
+![A screenshot of the Arcana-Darker theme](https://user-images.githubusercontent.com/1345297/79069201-b3cdc100-7ccc-11ea-832b-f3b8a55feb5a.png)
 
 ##### Arcana-Dark
 
-![A screenshot of the Arcana-Dark theme](http://i.imgur.com/5AGlCnA.png)
+![A screenshot of the Arcana-Dark theme](https://user-images.githubusercontent.com/1345297/79069199-b29c9400-7ccc-11ea-8a59-5a2802449606.png)
 
 ## Installation
 
