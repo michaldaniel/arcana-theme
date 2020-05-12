@@ -8,19 +8,19 @@ The theme was originally called [Arc]](https://github.com/horst3180/arc-theme), 
 
 ##### Arcana
 
-![A screenshot of the Arcana theme](https://user-images.githubusercontent.com/1345297/81694695-ee5c8200-9461-11ea-8ff0-cc85c10b425b.png)
+![A screenshot of the Arcana theme](https://user-images.githubusercontent.com/1345297/81695705-43e55e80-9463-11ea-988d-fdd2429be91e.png)
 
 ##### Arcana-Darker
 
-![A screenshot of the Arcana-Darker theme](https://user-images.githubusercontent.com/1345297/81694687-ec92be80-9461-11ea-944c-1fbe03c2d976.png)
+![A screenshot of the Arcana-Darker theme](https://user-images.githubusercontent.com/1345297/81695696-42b43180-9463-11ea-970e-63fcac54061e.png)
 
 ##### Arcana-Dark
 
-![A screenshot of the Arcana-Dark theme](https://user-images.githubusercontent.com/1345297/81694692-ed2b5500-9461-11ea-8ee6-6d25553d54d1.png)
+![A screenshot of the Arcana-Dark theme](https://user-images.githubusercontent.com/1345297/81695698-434cc800-9463-11ea-8386-ce45eface949.png)
 
 ##### Arcana-Lighter
 
-![A screenshot of the Arcana-Lighter theme](https://user-images.githubusercontent.com/1345297/81694686-eac8fb00-9461-11ea-8200-01e4e57753da.png)
+![A screenshot of the Arcana-Lighter theme](https://user-images.githubusercontent.com/1345297/81695693-41830480-9463-11ea-87ed-3b3b3fe58f55.png)
 
 ## Installation
 
