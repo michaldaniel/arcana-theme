@@ -8,7 +8,7 @@ The theme was originally called [Arc]](https://github.com/horst3180/arc-theme), 
 
 ##### Arcana
 
-![A screenshot of the Arcana theme](https://user-images.githubusercontent.com/1345297/81695705-43e55e80-9463-11ea-988d-fdd2429be91e.png)
+![A screenshot of the Arcana theme](https://user-images.githubusercontent.com/1345297/81695949-99217000-9463-11ea-9b42-9c991efff227.png)
 
 ##### Arcana-Darker
 
