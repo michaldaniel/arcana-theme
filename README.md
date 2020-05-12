@@ -2,7 +2,7 @@
 
 Arcana is a flat theme with transparent elements for GTK 3, GTK 2 and various desktop shells, window managers and applications. It's well suited for GTK based desktop environments such as GNOME, Cinnamon, Xfce, Unity, MATE, Budgie etc.
 
-The theme was originally called [Arc]](https://github.com/horst3180/arc-theme), this fork offers higher contrast and low vibrance version of the theme.
+The theme was originally called [Arc](https://github.com/horst3180/arc-theme), this fork offers higher contrast and low vibrance version of the theme.
 
 ## Arcana is available in four variants
 
