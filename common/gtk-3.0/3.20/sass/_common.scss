@@ -5,7 +5,7 @@
 $ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 $backdrop_transition: 200ms ease-out;
 $asset_suffix: if($variant=='dark', '-dark', ''); // use dark assets in dark variant
-$darker_asset_suffix: if($darker=='true', '-dark', $asset_suffix);
+$darker_asset_suffix: if($variant=='darker', '-dark', $asset_suffix);
 
 * {
   background-clip: padding-box;
@@ -127,7 +127,7 @@ label {
   &:disabled {
     color: $insensitive_fg_color;
 
-    selection { @extend %selected_items:disabled; }
+    selection { @extend %selected_items_disabled; }
   }
 }
 
@@ -234,7 +234,7 @@ entry {
                                           (searcanah-missing, $error_color, $error_fg_color) {
     &.#{$e_type} {
       color: $e_fg_color;
-      border-color: if($variant=='light', $e_color, $entry_border);
+      border-color: if($variant!='dark', $e_color, $entry_border);
       background-color: mix($e_color, $base_color, 60%);
 
       image { color: $e_fg_color; }
@@ -336,6 +336,7 @@ button {
 
   separator { margin: 4px 1px; }
 
+  @at-root %button_basic_flat,
   &.flat {
     @include button(undecorated);
     // to avoid adiacent buttons borders clashing when transitioning, the transition on the normal state is set
@@ -360,7 +361,7 @@ button {
   &:active, &:checked {
     @include button(active);
 
-    background-clip: if($variant=='light', border-box, padding-box);
+    background-clip: if($variant!='dark', border-box, padding-box);
     transition-duration: 50ms;
 
     &:not(:disabled) label:disabled { color: inherit; opacity: 0.6; }
@@ -371,6 +372,7 @@ button {
   &:active:hover, &:checked { color: $selected_fg_color; }
   //Webkitgtk workaround end
 
+  @at-root %button_basic_flat,
   &.flat:disabled { @include button(undecorated); }
 
   &:disabled {
@@ -397,23 +399,27 @@ button {
     padding-right: 5px;
 
     label {
+      padding-left: 2px;
+      padding-right: 2px;
+
       &:first-child {
-        padding-left: 8px;
+        padding-left: 7px;
         padding-right: 2px;
       }
       &:last-child {
-        padding-right: 8px;
+        padding-right: 7px;
         padding-left: 2px;
       }
       &:only-child {
-        padding-left: 8px;
-        padding-right: 8px;
+        padding-left: 7px;
+        padding-right: 7px;
       }
     }
 
-    &.popup { padding-right: 8px; padding-left: 8px; }
+    &.popup { padding-right: 7px; padding-left: 7px; }
   }
 
+  @at-root %button_basic_drop_active,
   &:drop(active) {
     color: $drop_target_color;
     border-color: $drop_target_color;
@@ -534,10 +540,10 @@ button {
                                     to(transparent));
     background-size: 6px 6px, 6px 6px;
     background-repeat: no-repeat;
-    @if $variant == 'light' { background-position: right 3px, right 4px; }
+    @if $variant != 'dark' { background-position: right 3px, right 4px; }
     @else { background-position: right 3px, right 2px; }
     &:dir(rtl) {
-      @if $variant == 'light' { background-position: left 3px, left 4px; }
+      @if $variant != 'dark' { background-position: left 3px, left 4px; }
       @else { background-position: left 3px, left 2px; }
     }
   }
@@ -580,9 +586,9 @@ button {
 // More inline toolbar buttons
 toolbar.inline-toolbar toolbutton {
   & > button.flat { @extend %linked_middle; }
-  &:first-child > button.flat { @extend %linked:first-child; }
-  &:last-child > button.flat { @extend %linked:last-child; }
-  &:only-child > button.flat { @extend %linked:only-child; }
+  &:first-child > button.flat { @extend %linked_left; }
+  &:last-child > button.flat { @extend %linked_right; }
+  &:only-child > button.flat { @extend %linked_only_child; }
 }
 
 // Some crazy linking stuff
@@ -649,7 +655,7 @@ toolbar.inline-toolbar toolbutton {
 }
 
 // special case, because path-bars are bugged
-@mixin pathbar_linking_rules($sep_color:if($variant=='light', transparentize($button_border, 0.6), transparentize($button_border, 0.5))) {
+@mixin pathbar_linking_rules($sep_color:if($variant!='dark', transparentize($button_border, 0.6), transparentize($button_border, 0.5))) {
 
   > button + button { border-left-style: none; }
 
@@ -677,21 +683,50 @@ toolbar.inline-toolbar toolbutton {
   border-right-style: none;
 }
 
+%linked_left {
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-right-style: none;
+}
+
+%linked_right {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-right-style: solid;
+}
+
+%linked_only_child {
+  border-radius: 3px;
+  border-style: solid;
+}
+
 %linked {
   @extend %linked_middle;
-  &:first-child {
-    border-top-left-radius: 3px;
-    border-bottom-left-radius: 3px;
+
+  &:first-child { @extend %linked_left; }
+  &:last-child { @extend %linked_right; }
+  &:only-child { @extend %linked_only_child; }
+}
+
+// Other widgets let CSS give the order, so 1st/last child are at text start/end
+%linked_flippable {
+  @extend %linked_middle;
+
+  &:dir(ltr) {
+    &:first-child { @extend %linked_left; }
+    &:last-child { @extend %linked_right; }
   }
-  &:last-child {
-    border-top-right-radius: 3px;
-    border-bottom-right-radius: 3px;
-    border-right-style: solid;
+
+  &:dir(rtl) {
+    &:first-child { @extend %linked_right; }
+    &:last-child { @extend %linked_left; }
   }
-  &:only-child {
-    border-radius: 3px;
-    border-style: solid;
-  }
+
+  &:only-child { @extend %linked_only_child; }
 }
 
 %linked_vertical_middle {
@@ -699,21 +734,28 @@ toolbar.inline-toolbar toolbutton {
   border-bottom-style: none;
 }
 
+%linked_vertical_top {
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+%linked_vertical_bottom {
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-style: solid;
+}
+
+%linked_vertical_only_child {
+  border-radius: 3px;
+  border-style: solid;
+}
+
 %linked_vertical{
   @extend %linked_vertical_middle;
-  &:first-child {
-    border-top-left-radius: 3px;
-    border-top-right-radius: 3px;
-  }
-  &:last-child {
-    border-bottom-left-radius: 3px;
-    border-bottom-right-radius: 3px;
-    border-bottom-style: solid;
-  }
-  &:only-child {
-    border-radius: 3px;
-    border-style: solid;
-  }
+
+  &:first-child { @extend %linked_vertical_top; }
+  &:last-child { @extend %linked_vertical_bottom; }
+  &:only-child { @extend %linked_vertical_only_child; }
 }
 
 %undecorated_button {
@@ -735,7 +777,7 @@ modelbutton.flat {
 
   @extend %undecorated_button;
 
-  &:hover { background-color: if($variant=='light', mix($fg_color,$bg_color,5%), mix($fg_color,$bg_color,10%)); }
+  &:hover { background-color: if($variant!='dark', mix($fg_color,$bg_color,5%), mix($fg_color,$bg_color,10%)); }
   &:active, &:selected { &, arrow { @extend %selected_items; } }
   &:checked { color: $fg_color; }
 
@@ -755,6 +797,7 @@ modelbutton.flat arrow {
 //
 // Links
 //
+%link,
 *:link {
   color: $link_color;
 
@@ -778,12 +821,16 @@ modelbutton.flat arrow {
 
 button:link, button:visited {
   @extend %undecorated_button;
-  @extend *:link;
+  @extend %link;
 
   &:hover, &:active, &:checked {
     @extend %undecorated_button;
   }
-  > label { text-decoration-line: underline; }
+  > label {
+    @extend %link;
+
+    text-decoration-line: underline;
+  }
 }
 
 //
@@ -816,7 +863,7 @@ spinbutton {
     > button.up:dir(rtl):hover:not(:active),
     > entry + button:not(:active):hover { box-shadow: none; }
 
-    > entry:focus + button { border-left-color: if($variant=='light', $selected_bg_color, $entry_border); }
+    > entry:focus + button { border-left-color: if($variant!='dark', $selected_bg_color, $entry_border); }
 
     > entry:drop(active) + button { border-left-color: $drop_target_color; }
 
@@ -842,7 +889,7 @@ spinbutton {
 
     button.up { border-radius: 3px 3px 0 0; }
 
-    > entry:focus + button { border-top-color: if($variant=='light', $selected_bg_color, $entry_border); }
+    > entry:focus + button { border-top-color: if($variant!='dark', $selected_bg_color, $entry_border); }
 
     > entry:drop(active) + button { border-top-color: $drop_target_color; }
   }
@@ -863,7 +910,7 @@ combobox {
     min-width: 16px;
   }
 
-  &:drop(active) button.combo { @extend button:drop(active); }
+  &:drop(active) button.combo { @extend %button_basic_drop_active; }
 
   .linked:not(.vertical) > & > box > button.combo {
     // the combobox is a composite widget so the way we do button linking doesn't
@@ -872,14 +919,14 @@ combobox {
     &:dir(rtl) { @extend %linked_middle; } // specificity bump
   }
 
-  .linked:not(.vertical) > &:first-child > box > button.combo { @extend %linked:first-child; }
-  .linked:not(.vertical) > &:last-child > box > button.combo { @extend %linked:last-child; }
-  .linked:not(.vertical) > &:only-child > box > button.combo { @extend %linked:only-child; }
+  .linked:not(.vertical) > &:first-child > box > button.combo { @extend %linked_left; }
+  .linked:not(.vertical) > &:last-child > box > button.combo { @extend %linked_right; }
+  .linked:not(.vertical) > &:only-child > box > button.combo { @extend %linked_only_child; }
 
   .linked.vertical > & > box > button.combo { @extend %linked_vertical_middle; }
-  .linked.vertical > &:first-child > box > button.combo { @extend %linked_vertical:first-child; }
-  .linked.vertical > &:last-child > box > button.combo { @extend %linked_vertical:last-child; }
-  .linked.vertical > &:only-child > box > button.combo { @extend %linked_vertical:only-child; }
+  .linked.vertical > &:first-child > box > button.combo { @extend %linked_vertical_top; }
+  .linked.vertical > &:last-child > box > button.combo { @extend %linked_vertical_bottom; }
+  .linked.vertical > &:only-child > box > button.combo { @extend %linked_vertical_only_child; }
 }
 
 //
@@ -970,7 +1017,7 @@ actionbar {
 //
 // Headerbars
 //
-$_header_radius: if($darker=='false' and $variant=='light', 4px, 3px);
+$_header_radius: if($variant=='light' or $variant=='lighter', 4px, 3px);
 
 headerbar,
 %titlebar {
@@ -1024,7 +1071,7 @@ headerbar,
       color: transparentize($selection_mode_fg, 0.4);
     }
 
-    .subtitle:link { @extend *:link:selected;  }
+    .subtitle:link { @extend %link_selected; }
 
     .selection-menu {
       box-shadow: none;
@@ -1115,16 +1162,6 @@ headerbar {
   @extend %titlebar;
 }
 
-.titlebar separator.sidebar {
-  background-color: transparent;
-  border: 0 solid $header_border;
-  box-shadow: inset 0 1px lighten($header_bg, 3%);
-  margin: 0;
-
-  &:dir(ltr) { border-width: 0 1px 1px 0; }
-  &:dir(rtl) { border-width: 0 0 1px 1px; }
-}
-
 .csd headerbar headerbar,
 .csd headerbar headerbar:backdrop {
   background-color: transparent;
@@ -1154,7 +1191,7 @@ headerbar {
 
     &:focus {
       @include entry(header-focus);
-      background-clip: if($darker=='false' and $variant=='light', border-box, padding-box);
+      background-clip: if($variant=='light' or $variant=='lighter', border-box, padding-box);
 
       image { color: $selected_fg_color; }
     }
@@ -1175,7 +1212,7 @@ headerbar {
                                             (error, $error_color, $error_fg_color) {
       &.#{$e_type} {
         color: $e_fg_color;
-        border-color: if($darker=='false' and $variant=='light', $e_color, $header_entry_border);
+        border-color: if($variant=='light' or $variant=='lighter', $e_color, $header_entry_border);
         background-color: mix($e_color, $header_bg, 60%);
 
         &:focus {
@@ -1200,7 +1237,7 @@ headerbar {
     &:hover { @include button(header-hover); }
     &:active, &:checked {
       @include button(header-active);
-      background-clip: if($darker=='false' and $variant=='light', border-box, padding-box);
+      background-clip: if($variant=='light' or $variant=='lighter', border-box, padding-box);
     }
     &:disabled { @include button(header-insensitive); }
     &:disabled:active, &:disabled:checked { @include button(header-insensitive-active); }
@@ -1213,25 +1250,25 @@ headerbar {
       color: $selection_mode_fg;
       background-color: transparentize($selection_mode_fg, 1);
     }
-    &:hover { @extend %normal_selected_button; }
-    &:active, &:checked { @extend %selected-button:active; }
+    &:hover { @extend %selected_button_normal; }
+    &:active, &:checked { @extend %selected_button_active; }
 
     &:disabled {
-      @extend %selected-button.flat:disabled;
+      @extend %selected_button_flat_disabled;
 
-      &:checked, &:active { @extend %selected-button:disabled:checked; }
+      &:checked, &:active { @extend %selected_button_disabled_active; }
     }
   }
 
   // Linking stuff
 
   // Disconnect linked buttons
-  .linked:not(.vertical):not(.path-bar):not(.nautilus-path-bar):not(.stack-switcher) {
+  .linked:not(.vertical):not(.path-bar):not(.stack-switcher) {
     button:not(:last-child):not(:only-child) { margin-right: 1px; }
   }
 
   // Reset buttons
-  .linked:not(.vertical):not(.path-bar):not(.nautilus-path-bar):not(.stack-switcher) > button {
+  .linked:not(.vertical):not(.path-bar) > button {
     &, &:hover, &:active, &:checked, &:disabled {
       border-radius: 3px;
       border-style: solid;
@@ -1265,7 +1302,7 @@ headerbar {
   // use linking rules for entries only
   .linked:not(.vertical):not(.path-bar) {
     @include linking_rules( $a:0.5,
-                            $var:if($variant=='light' and $darker=='false', 'light', 'dark'),
+                            $var:if($variant=='light' or $variant=='lighter', 'light', 'dark'),
                             $button_rules:'false',
                             $e_border:$header_entry_border,
                             $b_border:$header_button_border );
@@ -1321,7 +1358,7 @@ headerbar {
     > button:first-child:hover:not(:active),
     > entry + button:not(:active):hover { box-shadow: none; }
 
-    > entry:focus + button { border-left-color: if($variant=='light' and $darker=='false', $selected_bg_color, $header_entry_border); }
+    > entry:focus + button { border-left-color: if($variant=='light' or $variant=='lighter', $selected_bg_color, $header_entry_border); }
   }
 
   // Headerbar ComboBoxes
@@ -1340,13 +1377,13 @@ headerbar {
         border-right-style: none;
 
         &:focus { box-shadow: none; }
-        @if $variant=='light' and $darker=='false' { &:focus { box-shadow: 1px 0 $selected_bg_color; } }
+        @if $variant=='light' or $variant=='lighter' { &:focus { box-shadow: 1px 0 $selected_bg_color; } }
       }
       &:dir(rtl) {
         border-left-style: none;
 
         &:focus { box-shadow: none; }
-        @if $variant=='light' and $darker=='false' { &:focus { box-shadow: -1px 0 $selected_bg_color; } }
+        @if $variant=='light' or $variant=='lighter' { &:focus { box-shadow: -1px 0 $selected_bg_color; } }
       }
     }
     > .linked > button.combo {
@@ -1371,20 +1408,20 @@ headerbar {
   }
 
   progressbar {
-    trough { background-color: if($variant=='light' and $darker=='false', opacify($header_button_border, 0.05), $header_button_border); }
+    trough { background-color: if($variant=='light', opacify($header_button_border, 0.05), $header_button_border); }
 
     &:backdrop { opacity: 0.75; }
   }
 
   // Headerbar Scale
   scale {
-    $_trough_bg: if($variant=='light' and $darker=='false', opacify($header_button_border, 0.05), $header_button_border);
+    $_trough_bg: if($variant=='light' or $variant=='lighter', opacify($header_button_border, 0.05), $header_button_border);
 
     &:backdrop { opacity: 0.75; }
 
     slider {
-      $_slider_border: if($variant=='light' and $darker=='false', opacify($header_button_border, 0.2), opacify($header_button_border, 0.3));
-      $_slider_bg: if($variant=='light' and $darker=='false', opacify($header_button_bg,1), lighten(opacify($header_bg,1), 10%));
+      $_slider_border: if($variant=='light' or $variant=='lighter', opacify($header_button_border, 0.2), opacify($header_button_border, 0.3));
+      $_slider_bg: if($variant=='light' or $variant=='lighter', opacify($header_button_bg,1), lighten(opacify($header_bg,1), 10%));
 
       background-color: $_slider_bg;
       border-color: $_slider_border;
@@ -1405,7 +1442,7 @@ headerbar {
     trough {
       background-color: $_trough_bg;
 
-      &:disabled { background-color: if($variant=='light' and $darker=='false', transparentize($_trough_bg, 0.05), transparentize($_trough_bg, 0.1)); }
+      &:disabled { background-color: if($variant=='light' or $variant=='lighter', transparentize($_trough_bg, 0.05), transparentize($_trough_bg, 0.1)); }
     }
   }
 }
@@ -1413,6 +1450,14 @@ headerbar {
 //
 // Pathbars
 //
+
+// GtkPathBar does not work with just .linked, so we must override that. But we
+// can’t simply remove .linked from the widget as that might break other themes.
+// Note also we select on filechooser to avoid interfering with NautilusPathBar.
+filechooser .path-bar.linked > button {
+  @extend %linked_flippable;
+}
+
 .path-bar button {
   &.text-button, &.image-button, & {
     padding-left: 6px;
@@ -1548,8 +1593,8 @@ treeview.view {
       border-radius: 0;
       border-image: linear-gradient(to bottom,
                                     $base_color 20%,
-                                    transparentize(if($variant == 'light', black, white), 0.89) 20%,
-                                    transparentize(if($variant == 'light', black, white), 0.89) 80%,
+                                    transparentize(if($variant != 'dark', black, white), 0.89) 20%,
+                                    transparentize(if($variant != 'dark', black, white), 0.89) 80%,
                                     $base_color 80%) 0 1 0 0 / 0 1px 0 0 stretch;
 
       &:hover { color: $selected_bg_color; }
@@ -1615,7 +1660,7 @@ menubar,
 
 menu,
 .menu {
-  $_menu_bg: if($variant=='light', $base_color, $bg_color);
+  $_menu_bg: if($variant!='dark', $base_color, $bg_color);
   margin: 4px;
   padding: 0;
   border-radius: 0;
@@ -1631,7 +1676,7 @@ menu,
   separator,
   .csd & separator {
     margin: 2px 0;
-    background-color: $horizontal_separators_color;
+    background-color: $_menu_bg;
   }
 
   menuitem {
@@ -1704,18 +1749,22 @@ menu,
 //
 popover,
 popover.background {
-  $_popover_bg: if($variant=='light', $base_color, $bg_color);
+  $_popover_bg: if($variant!='dark', $base_color, $bg_color);
   padding: 2px;
   border-radius: 3px;
   background-clip: border-box;
   background-color: $_popover_bg;
 
-  box-shadow: 0 2px 6px 1px if($variant=='light', transparentize(black, 0.93), transparentize(black, 0.65));
+  box-shadow: 0 2px 6px 1px if($variant!='dark', transparentize(black, 0.93), transparentize(black, 0.65));
 
   .csd &, & { border: 1px solid darken($borders_color, 5%); }
 
   & separator { background-color: $_popover_bg; }
-  label.separator { @extend label.separator; } // Noice
+  label.separator {
+    @extend .dim-label;
+
+    color: $fg_color;
+  }
 
   > list,
   > .view,
@@ -1949,7 +1998,7 @@ scrollbar {
         min-width: 4px;
         min-height: 4px;
         background-color: mix($fg_color, $bg_color, 70%);
-        border: 1px solid if($variant == 'light', transparentize(white, 0.4), transparentize(black, 0.7));
+        border: 1px solid if($variant != 'dark', transparentize(white, 0.4), transparentize(black, 0.7));
       }
 
       &.horizontal slider {
@@ -2137,7 +2186,7 @@ scale {
 
   // Trough
   trough {
-    $_scale_trough_bg: if($variant == 'light', $button_border, darken($bg_color, 5%));
+    $_scale_trough_bg: if($variant != 'dark', $button_border, darken($bg_color, 5%));
 
     outline-offset: 2px;
     -gtk-outline-radius: 4.5px;
@@ -2194,7 +2243,7 @@ scale {
   }
 
   slider {
-    $_slider_border: if($variant=='light', transparentize(darken($button_border,25%), 0.5), darken($button_border,2%));
+    $_slider_border: if($variant!='dark', transparentize(darken($button_border,25%), 0.5), darken($button_border,2%));
 
     background-color: $button_bg;
     border: 1px solid $_slider_border;
@@ -2337,7 +2386,7 @@ progressbar {
   trough {
     border: none;
     border-radius: 3px;
-    background-color: if($variant == 'light', $button_border, darken($bg_color, 5%));
+    background-color: if($variant != 'dark', $button_border, darken($bg_color, 5%));
 
     row:selected &,
     infobar & { background-color: transparentize(black, 0.8); }
@@ -2349,19 +2398,19 @@ progressbar {
 //
 levelbar {
   block {
-    min-width: 1px;
+    min-width: 32px;
     min-height: 1px;
   }
   &.vertical block {
     min-width: 1px;
-    min-height: 1px;
+    min-height: 32px;
   }
 
   trough {
     border: none;
     padding: 3px;
     border-radius: 3px;
-    background-color: if($variant == 'light', $button_border, darken($bg_color, 5%));
+    background-color: if($variant != 'dark', $button_border, darken($bg_color, 5%));
   }
 
   &.horizontal.discrete block { margin: 0 1px; }
@@ -2385,8 +2434,8 @@ levelbar {
     background-color: $success_color;
   }
   block.empty {
-    background-color: if($variant=='light', transparentize($fg_color,0.8), $base_color);
-    border-color: if($variant=='light', transparentize($fg_color,0.8), $base_color);
+    background-color: if($variant!='dark', transparentize($fg_color,0.8), $base_color);
+    border-color: if($variant!='dark', transparentize($fg_color,0.8), $base_color);
   }
 }
 
@@ -2475,12 +2524,12 @@ row {
   &:selected {
     @extend %selected_items;
 
-    button { @extend %selected-button; }
+    button { @extend %selected_button; }
   }
 
   &.activatable {
     &.has-open-popup,
-    &:hover { background-color: if($variant == 'light', transparentize(black, 0.95), transparentize(white, 0.97)); }
+    &:hover { background-color: if($variant != 'dark', transparentize(black, 0.95), transparentize(white, 0.97)); }
 
     &:active { color: $fg_color; }
     &:disabled {
@@ -2710,7 +2759,7 @@ placessidebar {
       margin-top: 2px;
       margin-bottom: 2px;
       padding: 0;
-      @extend button.flat;
+      @extend %button_basic_flat;
       border-radius: 100%;
       -gtk-outline-radius: 100%;
 
@@ -2736,6 +2785,19 @@ placessidebar {
         &, label, image { color: $selected_fg_color; }
         background-color: $drop_target_color;
       }
+    }
+  }
+}
+
+separator.sidebar {
+  &:dir(ltr), &.left, &.left:dir(rtl),
+  &:dir(rtl), &.right {
+    background-color: $borders_color;
+    border: 0;
+
+    .titlebar & {
+      background-color: $header_border;
+      margin: 0;
     }
   }
 }
@@ -2825,33 +2887,32 @@ paned {
 //
 infobar {
   border-style: none;
-  
-  &.info { background-color: $selected_bg_color; }
-  &.question { background-color: $suggested_color; }
-  &.warning { background-color: $warning_color; }
-  &.error { background-color: $error_color; }
+
   &.info,
   &.question,
   &.warning,
   &.error {
+    background-color: $selected_bg_color;
     color: $selected_fg_color;
     caret-color: currentColor;
-    button { @extend %selected-button }
+
+    button { @extend %selected_button }
+
     selection {
       color: $selected_bg_color;
       background-color: $selected_fg_color;
     }
+
     *:link { @extend %link_selected; }
   }
 }
 
-
 //
 // Buttons on selected backgrounds
 //
-%selected-button {
+%selected_button {
 
-  @at-root %normal_selected_button, & {
+  @at-root %selected_button_normal, & {
     color: $selected_fg_color;
     background-color: transparentize($selected_fg_color, 1);
     border-color: transparentize($selected_fg_color, 0.5);
@@ -2862,6 +2923,7 @@ infobar {
     color: $selected_fg_color;
     background-color: transparentize($selected_fg_color, 1);
 
+    @at-root %selected_button_flat_disabled,
     &:disabled {
       &, label { color: transparentize($selected_fg_color, 0.6); }
     }
@@ -2871,6 +2933,7 @@ infobar {
     background-color: transparentize($selected_fg_color, 0.8);
     border-color: transparentize($selected_fg_color, 0.2);
   }
+  @at-root %selected_button_active,
   &:active, &:active:hover, &:checked {
     color: $selected_bg_color;
     background-color: $selected_fg_color;
@@ -2881,6 +2944,7 @@ infobar {
     background-color: transparentize($selected_fg_color, 1);
     border-color: transparentize($selected_fg_color, 0.6);
 
+    @at-root %selected_button_disabled_active,
     &:active, &:checked {
       color: $selected_bg_color;
       background-color: transparentize($selected_fg_color, 0.5);
@@ -2964,18 +3028,18 @@ colorswatch {
   &.dark overlay {
     color: transparentize(white, 0.3);
     &:hover {
-      border-color: if($variant == 'light', transparentize(black, 0.5), $borders_color);
+      border-color: if($variant != 'dark', transparentize(black, 0.5), $borders_color);
     }
   }
   &.light overlay {
     color: transparentize(black, 0.3);
     &:hover {
-      border-color: if($variant == 'light', transparentize(black, 0.7), $borders_color);
+      border-color: if($variant != 'dark', transparentize(black, 0.7), $borders_color);
     }
   }
 
   overlay {
-    border: 1px solid if($variant == 'light', transparentize(black, 0.85), $borders_color);
+    border: 1px solid if($variant != 'dark', transparentize(black, 0.85), $borders_color);
     &:hover { background-color: transparentize(white, 0.8) }
   }
 
@@ -2987,7 +3051,7 @@ colorswatch {
     }
   }
 
-  &#d6d6d6-color-button {
+  &#e0e0e0-color-button {
     border-style: solid; // the borders are drawn by the overlay for standard colorswatches to have them semi
     border-width: 1px;   // translucent on the colored background, here it's not necessary so they need to be set
     @include button(normal);
@@ -3039,6 +3103,7 @@ colorchooser .popover.osd { border-radius: 3px; }
 //
 // Shortcuts Help
 //
+%button_circular,
 button.circular,
 button.circular-button {
   padding: 0;
@@ -3061,7 +3126,7 @@ button.circular-button {
   background-color: $base_color;
   border: 1px solid $borders_color;
   border-radius: 2.5px;
-  box-shadow: inset 0px -2px 0px if($variant=='light', transparentize(black, 0.95), transparentize(black, 0.85));
+  box-shadow: inset 0px -2px 0px if($variant!='dark', transparentize(black, 0.95), transparentize(black, 0.85));
 }
 
 stackswitcher button {
@@ -3082,13 +3147,13 @@ stackswitcher button {
 //
 
 decoration {
-  border-radius: if($darker=='false' and $variant=='light', 4px 4px 0 0, 3px 3px 0 0);
+  border-radius: if($variant=='light' or $variant=='lighter', 4px 4px 0 0, 3px 3px 0 0);
   border-width: 0px;
 
-  $_wm_border: if($variant=='light', transparentize(black, 0.9), transparentize(black, 0.45));
+  $_wm_border: if($variant!='dark', transparentize(black, 0.9), transparentize(black, 0.45));
 
-  box-shadow: 0 0 0 1px if($darker=='true' or $variant == 'dark', darken($header_bg, 7%), $_wm_border),
-              0 8px 8px 0 if($variant == 'light', opacify($_wm_border, 0.1), transparentize($_wm_border, 0.2));
+  box-shadow: 0 0 0 1px if($variant == 'dark' or $variant == 'darker', darken($header_bg, 7%), $_wm_border),
+              0 8px 8px 0 if($variant !='dark', opacify($_wm_border, 0.1), transparentize($_wm_border, 0.2));
 
   // this is used for the resize cursor area
   margin: 10px;
@@ -3096,9 +3161,9 @@ decoration {
   &:backdrop {
     // the transparent shadow here is to enforce that the shadow extents don't
     // change when we go to backdrop, to prevent jumping windows
-    box-shadow: 0 0 0 1px if($darker=='true' or $variant == 'dark', transparentize(darken($header_bg, 7%), 0.1), $_wm_border),
+    box-shadow: 0 0 0 1px if($variant == 'dark' or $variant == 'darker', transparentize(darken($header_bg, 7%), 0.1), $_wm_border),
                 0 8px 8px 0 transparent,
-                0 5px 5px 0 if($variant == 'light', opacify($_wm_border, 0.1), transparentize($_wm_border, 0.2));
+                0 5px 5px 0 if($variant !='dark', opacify($_wm_border, 0.1), transparentize($_wm_border, 0.2));
 
     transition: $backdrop_transition;
   }
@@ -3112,19 +3177,19 @@ decoration {
   }
   // server-side decorations as used by mutter
   .ssd & {
-    border-radius: if($darker=='false' and $variant=='light', 4px 4px 0 0, 3px 3px 0 0);
-    box-shadow: 0 0 0 1px if($darker=='true' or $variant == 'dark', transparentize(black, 0.35), $_wm_border);
+    border-radius: if($variant=='light' or $variant=='lighter', 4px 4px 0 0, 3px 3px 0 0);
+    box-shadow: 0 0 0 1px if($variant == 'dark' or $variant == 'darker', transparentize(black, 0.35), $_wm_border);
 
     &.maximized { border-radius: 0; }
   }
   .csd.popup & {
     border-radius: 2px;
-    box-shadow: 0 3px 6px if($variant == 'light', $_wm_border, transparentize($_wm_border, 0.1)),
-                0 0 0 1px if($variant == 'light', $_wm_border, darken($bg_color, 10%));
+    box-shadow: 0 3px 6px if($variant != 'dark', $_wm_border, transparentize($_wm_border, 0.1)),
+                0 0 0 1px if($variant != 'dark', $_wm_border, darken($bg_color, 10%));
   }
   tooltip.csd & {
     border-radius: 2px;
-    box-shadow: 0 1px 3px 1px if($variant == 'light', $_wm_border, transparentize($_wm_border, 0.3));
+    box-shadow: 0 1px 3px 1px if($variant != 'dark', $_wm_border, transparentize($_wm_border, 0.3));
   }
   messagedialog.csd & {
     border-radius: 3px;
@@ -3181,41 +3246,6 @@ headerbar,
       }
     }
   }
-  .maximized & {
-    button.titlebutton {
-    padding: 0;
-    min-width: 24px;
-
-    @include button(undecorated);
-    background-color: transparentize($header_bg, 1);
-
-    &:hover {
-      @include button(header-hover);
-    }
-    &:active, &:checked {
-      @include button(header-active);
-    }
-    &.close, &.maximize, &.minimize {
-      color: transparent;
-      background-color: transparent;
-      background-position: center;
-      background-repeat: no-repeat;
-      border-width: 0;
-
-      &:backdrop { opacity: 1; }
-    }
-    // Load png assets for each button
-    @each $k in ('close', 'minimize') {
-      @each $l, $m in ('',''), (':backdrop','-backdrop'), (':hover','-hover'), (':active','-active') {
-
-        &.#{$k}#{$l} { background-image: -gtk-scaled(url('assets/titlebutton-#{$k}#{$m}#{$darker_asset_suffix}.png'),
-                                                     url('assets/titlebutton-#{$k}#{$m}#{$darker_asset_suffix}@2.png')); }
-        &.maximize#{$l} { background-image: -gtk-scaled(url('assets/titlebutton-unmaximize#{$m}#{$darker_asset_suffix}.png'),
-                                                     url('assets/titlebutton-unmaximize#{$m}#{$darker_asset_suffix}@2.png')); }
-      }
-    }
-  }
-  }
 }
 
 // catch all extend
@@ -3225,6 +3255,7 @@ headerbar,
   @at-root %nobg_selected_items, & {
     color: $selected_fg_color;
 
+    @at-root %selected_items_disabled,
     &:disabled { color: mix($selected_fg_color, $selected_bg_color, 50%); }
   }
 }

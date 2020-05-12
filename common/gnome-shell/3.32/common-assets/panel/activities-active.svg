@@ -26,8 +26,8 @@
      stroke="#ef2929"
      fill="#f57900"
      id="base"
-     pagecolor="#c7c7c7"
-     bordercolor="#2d2d35"
+     pagecolor="#d1d1da"
+     bordercolor="#202024"
      borderopacity="1"
      inkscape:pageopacity="1"
      inkscape:pageshadow="2"
@@ -61,9 +61,9 @@
      guidetolerance="10000"
      borderlayer="true"
      showborder="true"
-     guidecolor="#8c0600"
+     guidecolor="#660400"
      guideopacity="1"
-     guidehicolor="#000e8c"
+     guidehicolor="#000a66"
      guidehiopacity="0.49803922">
     <inkscape:grid
        type="xygrid"

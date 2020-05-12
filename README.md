@@ -1,94 +1,36 @@
 # Arcana Theme
 
-Hight contrast and low vibrance version of Arc theme
+Arcana is a flat theme with transparent elements for GTK 3, GTK 2 and various desktop shells, window managers and applications. It's well suited for GTK based desktop environments such as GNOME, Cinnamon, Xfce, Unity, MATE, Budgie etc.
 
-## Arcana is available in three variants
+The theme was originally called [Arc]](https://github.com/horst3180/arc-theme), this fork offers higher contrast and low vibrance version of the theme.
+
+## Arcana is available in four variants
 
 ##### Arcana
 
-![A screenshot of the Arcana theme](https://user-images.githubusercontent.com/1345297/79069200-b3cdc100-7ccc-11ea-96c4-fdb08d046e6e.png)
+![A screenshot of the Arcana theme](https://user-images.githubusercontent.com/1345297/81694695-ee5c8200-9461-11ea-8ff0-cc85c10b425b.png)
 
 ##### Arcana-Darker
 
-![A screenshot of the Arcana-Darker theme](https://user-images.githubusercontent.com/1345297/79069201-b3cdc100-7ccc-11ea-832b-f3b8a55feb5a.png)
+![A screenshot of the Arcana-Darker theme](https://user-images.githubusercontent.com/1345297/81694687-ec92be80-9461-11ea-944c-1fbe03c2d976.png)
 
 ##### Arcana-Dark
 
-![A screenshot of the Arcana-Dark theme](https://user-images.githubusercontent.com/1345297/79069199-b29c9400-7ccc-11ea-8a59-5a2802449606.png)
+![A screenshot of the Arcana-Dark theme](https://user-images.githubusercontent.com/1345297/81694692-ed2b5500-9461-11ea-8ee6-6d25553d54d1.png)
+
+##### Arcana-Lighter
+
+![A screenshot of the Arcana-Lighter theme](https://user-images.githubusercontent.com/1345297/81694686-eac8fb00-9461-11ea-8200-01e4e57753da.png)
 
 ## Installation
 
-To build the theme the following packages are required
-* `autoconf`
-* `automake`
-* `sassc` 
-* `pkg-config` or `pkgconfig` for Fedora
-* `git` to clone the source directory
-* `optipng` 
-* `inkscape`
+See [INSTALL.md](https://github.com/michaldaniel/arcana-theme/blob/master/INSTALL.md) for build instructions, list of dependencies, build options and additional details.
 
-The following packages are optionally required
-* `gnome-shell`
-* `libgtk-3-dev` or `gtk3-devel` for Fedora
+## Bugs
 
-For the theme to function properly, install the following
-
-* The `gnome-themes-extra` package
-* The murrine engine. This has different names depending on the distro.
-  * `gtk-engine-murrine` (Arcanah Linux)
-  * `gtk2-engines-murrine` (Debian, Ubuntu, elementary OS)
-  * `gtk-murrine-engine` (Fedora)
-  * `gtk2-engine-murrine` (openSUSE)
-  * `gtk-engines-murrine` (Gentoo)
-
-Install the theme with the following commands
-
-#### 1. Get the source
-
-Clone the git repository with
-
-    git clone https://github.com/michaldaniel/arcana-theme --depth 1 && cd arcana-theme
-
-#### 2. Build and install the theme
-
-    ./autogen.sh --prefix=/usr
-    sudo make install
-
-Other options to pass to autogen.sh are
-
-    --disable-transparency         disable transparency in the GTK3 theme
-    --disable-light                disable Arcana Light support
-    --disable-darker               disable Arcana Darker support
-    --disable-dark                 disable Arcana Dark support
-    --disable-cinnamon             disable Cinnamon support
-    --disable-gnome-shell          disable GNOME Shell support
-    --disable-gtk2                 disable GTK2 support
-    --disable-gtk3                 disable GTK3 support
-    --disable-metacity             disable Metacity support
-    --disable-unity                disable Unity support
-    --disable-xfwm                 disable XFWM support
-    --disable-plank                disable Plank theme support
-    --disable-openbox              disable Openbox support
-
-    --with-gnome-shell=<version>   build the gnome-shell theme for a specific version
-    --with-gtk3=<version>          build the GTK3 theme for a specific version
-                                   Note: Normally the correct version is detected automatically
-                                   and these options should not be needed.
-    
-After the installation is complete the theme can be activated with `gnome-tweak-tool` or a similar program by selecting `Arcana`, `Arcana-Darker` or `Arcana-Dark` as Window/GTK+ theme and `Arcana` or `Arcana-Dark` as GNOME Shell/Cinnamon theme.
-
-If the `--disable-transparency` option was used, the theme will be installed as `Arcana-solid`, `Arcana-Darker-solid` and `Arcana-Dark-solid`.
-
-## Uninstall
-
-Run
-
-    sudo make uninstall
-
-from the cloned git repository, or
-
-    sudo rm -rf /usr/share/themes/{Arcana,Arcana-Darker,Arcana-Dark}
+If you find a bug, or have a suggestion for improving the theme, please open an issue at <https://github.com/michaldaniel/arcana-theme/issues>.
 
 ## License
 
-Arcana is available under the terms of the GPL-3.0. See `COPYING` for details.
+Arcana is available under the terms of the GPL-3.0. See [COPYING](https://github.com/michaldaniel/arcana-theme/blob/master/COPYING) for details.
+

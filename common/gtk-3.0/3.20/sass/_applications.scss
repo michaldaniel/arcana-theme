@@ -35,6 +35,7 @@ terminal-window,
   border-radius: 2px;
 }
 
+%nautilus_canvas_item,
 .nautilus-desktop.nautilus-canvas-item {
   color: white;
   text-shadow: 1px 1px transparentize(black, 0.4);
@@ -66,72 +67,8 @@ terminal-window,
   background-color: $base_color;
 }
 
-// Pathbar for nautilus >=3.30
-.nautilus-window .path-bar-box {
-  border-radius: 3px;
-
-  &.width-maximized {
-    border: 1px $header_button_border solid;
-    transition: border $backdrop_transition;
-    transition: background-color $backdrop_transition;
-
-    &:not(:backdrop) {
-      background-color: $header_button_bg;
-    }
-  }
-}
-
-// path-bar buttons for nautilus 3.30
-.nautilus-window .path-bar > box > button {
-  background-color: transparent;
-  border-color: transparent;
-  border-radius: 0;
-  color: $header_fg;
-  margin: 0 2px;
-  padding: 1px;
-
-  &:not(:backdrop):hover {
-    box-shadow: 0 -3px $selected_bg_color inset;
-  }
-}
-
-// path-bar buttons for nautilus >=3.32
-.nautilus-path-bar > button {
-  margin: 0;
-  border: 1px $header_button_border solid;
-  background-color: $header_button_bg;
-
-  @extend %linked;
-
-  // from .linked:not(.vertical).path-bar > button:hover in _common.scss
-  &:hover { background-color: lighten($header_button_bg, 15%); }
-
-  &:active, &:checked { @include button(header-active); }
-
-  .nautilus-window .path-bar-box.width-maximized > & {
-    border-width: 0;
-
-    &:last-child {
-      border-width: 0px 1px 0px 0px;
-    }
-
-    &:only-child {
-      border-radius: 3px 0px 0px 3px;
-    }
-
-    &:not(:first-child) {
-      border-radius: 0;
-    }
-  }
-
-  // workaround jumpy button labels
-  & > box > label { padding: 0 1px; }
-  &:only-child > box > label { padding: 0 2px; }
-}
-
-
 button.nautilus-circular-button.image-button {
-  @extend button.circular;
+  @extend %button_circular;
 }
 
 $disk_space_unknown: transparentize($fg_color, 0.5);
@@ -187,7 +124,7 @@ $disk_space_free: darken($bg_color, 3%);
 //
 // Nemo
 //
-.nemo-desktop.nemo-canvas-item { @extend .nautilus-desktop.nautilus-canvas-item; }
+.nemo-desktop.nemo-canvas-item { @extend %nautilus_canvas_item; }
 
 .nemo-window {
 
@@ -221,12 +158,14 @@ $disk_space_free: darken($bg_color, 3%);
 
     @include pathbar_linking_rules($sep_color:$header_button_border);
   }
-  
+
   // Nemo dual pane inactive pane
-  
-  .nemo-inactive-pane .view {
-    color: $insensitive_fg_color;
-    background-color: $base_color;
+
+  .nemo-inactive-pane {
+    .view, .view > header > button {
+      color: transparentize($fg_color, 0.3);
+      background-color: darken($base_color, 3%);
+    }
   }
 }
 
@@ -254,29 +193,39 @@ $disk_space_free: darken($bg_color, 3%);
     @extend %header_widgets;
   }
 
-  scrolledwindow.sidebar {
-    border-top-color: darken($dark_sidebar_bg, 6%);
-  }
-
   scrolledwindow.sidebar treeview.view {
     background: $dark_sidebar_bg;
     color: $dark_sidebar_fg;
-
+    
     &:selected, &:active {
       background: $selected_bg_color;
       color: $selected_fg_color;
     }
+  }
+
+  scrolledwindow.shortcuts-pane {
+    border-top-width: 0;
   }
 }
 
 //
 // Caja
 //
-.caja-desktop { @extend .nautilus-desktop.nautilus-canvas-item; }
+.caja-desktop { @extend %nautilus_canvas_item; }
 
 .caja-notebook { border-top: 1px solid $borders_color; }
 .caja-side-pane .frame { border-width: 1px 0 0; }
 .caja-notebook .frame { border-width: 0 0 1px; }
+
+.caja-navigation-window {
+  .view .cell:selected {
+    &, &:focus {
+      background-image: _solid($selected_bg_color);
+
+      @extend %selected_items;
+    }
+  }
+}
 
 //
 // Gedit
@@ -367,7 +316,7 @@ $disk_space_free: darken($bg_color, 3%);
 
 .gedit-map-frame {
   border {
-    @if $variant=='light' { border-color: transparentize(black, 0.7); }
+    @if $variant!='dark' { border-color: transparentize(black, 0.7); }
     border-width: 0;
 
     &:dir(ltr) { border-left-width: 1px; }
@@ -721,6 +670,8 @@ panel-toplevel.background {
     @extend %panelbutton;
   }
 
+  #tasklist-button { @extend %tasklist-button; }
+
   button,
   #tasklist-button {
     label, image { color: inherit; }
@@ -749,47 +700,51 @@ panel-toplevel.background {
 // Xfce Panel
 .xfce4-panel.panel {
   background-color: $panel_bg;
-  font-weight: normal;
 
   text-shadow: none;
   -gtk-icon-shadow: none;
 
   frame > border { border: 0; }
   label { font-weight: normal; }
-  button { @extend %panelbutton; }
-}
-.xfce4-panel.panel menu {
-  font-weight: normal;
+  widget { color: $panel_fg; }
+
+  .tasklist > button { @extend %tasklist-button; }
+
+  button,
+  .tasklist > button.flat {
+    @extend %panelbutton;
+  }
+
+  button label,
+  button image:not(:only-child) {
+    &:first-child { padding-left: 4px; }
+    padding-right: 4px;
+  }
 }
 
-#tasklist-button {
-  color: transparentize($panel_fg, 0.2);
+%tasklist-button, %panelbutton {
+  color: $panel_fg;
   border-radius: 0;
   border: none;
   background-color: transparentize($panel_bg, 1);
+  transition: none;
 
   &:hover {
-    color: lighten($panel_fg, 10%);
-    background-color: transparentize(black, 0.83);
+    color: if($variant == 'lighter', darken($panel_fg, 10%), lighten($panel_fg, 10%));
+    border: none;
+    background-color: if($variant == 'lighter', transparentize(black, 0.9), transparentize(black, 0.83));
   }
+}
 
+%tasklist-button {
   &:checked {
-    color: white;
-    background-color: transparentize(black, 0.75);
+    color: if($variant == 'lighter', darken($panel_fg, 10%), white);
+    background-color: if($variant == 'lighter', transparentize(black, 0.85), transparentize(black, 0.75));
     box-shadow: inset 0 -2px $selected_bg_color;
   }
 }
 
 %panelbutton {
-  color: $panel_fg;
-  border-radius: 0;
-  border: none;
-  background-color: transparentize($panel_bg, 1);
-
-  &:hover {
-    border: none;
-    background-color: lighten($panel_bg, 10%);
-  }
   &:active, &:checked {
     color: $selected_fg_color;
     border: none;
@@ -816,7 +771,24 @@ panel-toplevel.background {
     border-radius: 0;
     min-height: 0;
 
-    @extend %selected-button;
+    @extend %selected_button;
+  }
+}
+
+//
+// xfce4-notifyd
+//
+#XfceNotifyWindow {
+  @extend %osd;
+
+  border-radius: 2px;
+
+  button {
+    @include button(osd);
+
+    &:hover { @include button(osd-hover); }
+    &:active, &:checked { @include button(osd-active); }
+    &:disabled { @include button(osd-insensitive); }
   }
 }
 
@@ -873,7 +845,7 @@ panel-toplevel.background {
     background-color: transparent;
 
   .title, .label {
-    color: #363640;
+    color: #27272c;
   }
 }
 
@@ -884,6 +856,8 @@ panel-toplevel.background {
   background-color: transparent;
   color: white;
   font-weight: bold;
+  text-shadow: 0 1px 2px transparentize(black, 0.4);
+  -gtk-icon-shadow: 0 1px 2px transparentize(black, 0.4);
 
   &-shadow {
     background-image: none;
@@ -911,6 +885,12 @@ panel-toplevel.background {
   }
   .window-frame.menu.csd,
   .window-frame.popup.csd { box-shadow: none; }
+
+  popover {
+    font-weight: normal;
+    text-shadow: none;
+    -gtk-icon-shadow: none;
+  }
 }
 
 .composited-indicator {
@@ -938,38 +918,6 @@ panel-toplevel.background {
 
 .panel .menu .spinner,
 .menu .spinner { opacity: 1 } // Fixes sound indicator buttons
-
-/********************
- * Mate-Screensaver *
- ********************/
-
-.lock-dialog {
-    background-color: $panel_bg;
-    color: white;
-
-    & entry, entry:focus textview text {
-        background-color: transparent;
-        color: white;
-        border-style: none;
-        border-bottom: 1px solid $borders_color;
-        border-radius: 1px;
-    }
-
-    frame > border {
-            border-style: none;
-            border-width: 0px;
-        }
-
-    & notebook {
-        color: white;
-        background-color: transparentize($panel_bg, 0.8);
-    }
-
-    & button {
-        @extend %selected-button;
-    }
-}
-
 
 //
 // Wingpanel Popover
@@ -1013,17 +961,3 @@ panel-toplevel.background {
 //SwitchboardCategoryView .view:selected:focus {
 //  color: $fg_color;
 //}
-
-//
-// Chromium
-//
-window.background.chromium {
-  // See details in nav_button_provider_gtk3.cc
-  headerbar.titlebar button.titlebutton {
-    min-width: 16px;
-    min-height: 16px;
-    // move button spacing from padding to margin
-    margin: 0px ((24px - 16px) / 2);
-    padding: 0px;
-  }
-}

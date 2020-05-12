@@ -1,9 +1,9 @@
 AC_INIT(
     [arcana-theme],
-    [20190917],
-    [https://github.com/arcana-design/arcana-theme/issues],
+    [20200512],
+    [https://github.com/michaldaniel/arcana-theme/issues],
     [arcana-theme],
-    [https://github.com/arcana-design/arcana-theme],
+    [https://github.com/michaldaniel/arcana-theme],
     []
 )
 
@@ -16,6 +16,7 @@ AC_PROG_MKDIR_P
 ARC_ENABLE([LIGHT],         [light],         [Arcana Light],     [disable])
 ARC_ENABLE([DARKER],        [darker],        [Arcana Darker],    [disable])
 ARC_ENABLE([DARK],          [dark],          [Arcana Dark],      [disable])
+ARC_ENABLE([LIGHTER],       [lighter],       [Arcana Lighter],   [disable])
 ARC_ENABLE([CINNAMON],      [cinnamon],      [Cinnamon],      [disable])
 ARC_ENABLE([GNOME_SHELL],   [gnome-shell],   [GNOME Shell],   [disable])
 ARC_ENABLE([GTK2],          [gtk2],          [GTK2],          [disable])
@@ -31,25 +32,30 @@ AS_IF([test "x$ENABLE_TRANSPARENCY" != xno], [
     AC_SUBST([themedir], [${datadir}/themes/Arcana])
     AC_SUBST([themedarkerdir], [${datadir}/themes/Arcana-Darker])
     AC_SUBST([themedarkdir], [${datadir}/themes/Arcana-Dark])
+    AC_SUBST([themelighterdir], [${datadir}/themes/Arcana-Lighter])
 ], [
     AC_SUBST([themedir], [${datadir}/themes/Arcana-solid])
     AC_SUBST([themedarkerdir], [${datadir}/themes/Arcana-Darker-solid])
     AC_SUBST([themedarkdir], [${datadir}/themes/Arcana-Dark-solid])
+    AC_SUBST([themelighterdir], [${datadir}/themes/Arcana-Lighter-solid])
 ])
 
 AS_IF([test "x$ENABLE_GTK3" != xno], [ARC_GTK3])
-AS_IF([test "x$ENABLE_GNOME_SHELL" != xno], [ARC_GNOME_SHELL])
+AS_IF([test "x$ENABLE_GNOME_SHELL" != xno],
+    [ARC_GNOME_SHELL]
+    [GNOME_SHELL_VERSMNR=`echo $GNOME_SHELL_VERSION | cut -d. -f2`])
+AM_CONDITIONAL([GNOME_SHELL_3_32_OR_NEWER], [test "0$GNOME_SHELL_VERSMNR" -ge 31])
+AS_IF([test "x$ENABLE_CINNAMON" != xno], [ARC_CINNAMON])
 
 AS_IF([test "x$ENABLE_GTK2" != xno -o "x$ENABLE_GTK3" != xno -o "x$ENABLE_XFWM" != xno], [
-    AC_PATH_PROG([RENDERSVG], [rendersvg])
-    AS_IF([test "x$ac_cv_path_RENDERSVG" = x], [AC_MSG_WARN([rendersvg not found, using inkscape instead])])
-    AM_CONDITIONAL([RENDERSVG], [test ! "x$ac_cv_path_RENDERSVG" = x])
     AC_PATH_PROG([INKSCAPE], [inkscape])
-    AS_IF([test "x$ac_cv_path_INKSCAPE" = x -a "x$RENDERSVG" = x], [AC_MSG_ERROR([inkscape not found])])
-    AM_CONDITIONAL([INKSCAPE], [test ! "x$ac_cv_path_INKSCAPE" = x])
+    AS_IF([test "x$ac_cv_path_INKSCAPE" = x], [AC_MSG_ERROR([inkscape not found])])
+    AS_IF([test "x$ac_cv_path_INKSCAPE" != x],
+        [INKSCAPE_VERSMJR=`inkscape --version 2> /dev/null | cut -d' ' -f2 | cut -d'.' -f1`]
+        AM_CONDITIONAL([INKSCAPE_1_0_OR_NEWER], [test "x$INKSCAPE_VERSMJR" = x1])
+    )
     AC_PATH_PROG([OPTIPNG], [optipng])
-    AS_IF([test "x$ac_cv_path_OPTIPNG" = x], [AC_MSG_WARN([optipng not found, PNG assets won't be optimized])])
-    AM_CONDITIONAL([OPTIPNG], [test ! "x$ac_cv_path_OPTIPNG" = x])
+    AS_IF([test "x$ac_cv_path_OPTIPNG" = x], [AC_MSG_ERROR([optipng not found])])
 ])
 
 AS_IF([test "x$ENABLE_GTK3" != xno -o "x$ENABLE_CINNAMON" != xno -o "x$ENABLE_GNOME_SHELL" != xno], [
@@ -62,9 +68,10 @@ AC_CONFIG_FILES([
     common/gtk-3.0/Makefile
     common/gtk-3.0/3.18/Makefile
     common/gtk-3.0/3.20/Makefile
+    common/gtk-3.0/3.22/Makefile
+    common/gtk-3.0/3.24/Makefile
     common/xfwm4/Makefile
     common/Makefile
-    extra/Makefile
     Makefile
 ])
 
